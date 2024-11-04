@@ -9,8 +9,11 @@ import { TaskDataTable } from './_components/task-data-table'
 import { Button } from '@/components/ui/button'
 import { TaskUpsertSheet } from './_components/task-upsert-sheet'
 import { PlusIcon } from '@radix-ui/react-icons'
+import { getUserTasks } from './actions'
 
 export default async function Page() {
+  const tasks = await getUserTasks()
+
   return (
     <DashboardPage>
       <DashboardPageHeader>
@@ -39,7 +42,7 @@ export default async function Page() {
           Seja bem-vindo!
         </h1>
 
-        <TaskDataTable />
+        <TaskDataTable data={tasks} />
       </DashboardPageMain>
     </DashboardPage>
   )

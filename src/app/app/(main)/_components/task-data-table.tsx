@@ -36,49 +36,6 @@ import {
 import { formatMoney } from '@/lib/utils'
 import { Task } from '../types'
 
-const data: Task[] = [
-  {
-    id: "1a2b3c4d",
-    title: "Task 1",
-    cost: 100,
-    dueDate: new Date(2023, 10, 1),
-    presentOrder: 2,
-    userId: "user1",
-  },
-  {
-    id: "2b3c4d5e",
-    title: "Task 2",
-    cost: 200,
-    dueDate: new Date(2023, 10, 2),
-    presentOrder: 1,
-    userId: "user2",
-  },
-  {
-    id: "3c4d5e6f",
-    title: "Task 3",
-    cost: 300,
-    dueDate: new Date(2023, 10, 3),
-    presentOrder: 3,
-    userId: "user3",
-  },
-  {
-    id: "4d5e6f7g",
-    title: "Task 4",
-    cost: 400,
-    dueDate: new Date(2023, 10, 4),
-    presentOrder: 4,
-    userId: "user4",
-  },
-  {
-    id: "5e6f7g8h",
-    title: "Task 5",
-    cost: 500,
-    dueDate: new Date(2023, 10, 5),
-    presentOrder: 5,
-    userId: "user5",
-  }
-]
-
 export const columns: ColumnDef<Task>[] = [
   {
     accessorKey: "title",
@@ -146,7 +103,11 @@ export const columns: ColumnDef<Task>[] = [
   },
 ]
 
-export function TaskDataTable() {
+type TaskDataTableProps = {
+  data: Task[]
+}
+
+export function TaskDataTable({ data }: TaskDataTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []

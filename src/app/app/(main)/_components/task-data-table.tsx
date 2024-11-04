@@ -116,8 +116,6 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  data.sort((a, b) => a.presentOrder - b.presentOrder);
-
   const table = useReactTable({
     data,
     columns,

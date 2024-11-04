@@ -73,9 +73,9 @@ model Task {
   id String @id @default(cuid())
   title String @unique
   cost Int
-  dueDate DateTime
-  presentOrder Int @default(autoincrement()) @unique
+  dueDate DateTime @map(name: "due_date")
+  presentOrder Int @default(autoincrement()) @unique @map(name: "present_order")
 
   user User @relation(fields: [userId], references: [id])
-  userId String
+  userId String @map(name: "user_id")
 }

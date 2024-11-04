@@ -1,9 +1,4 @@
-export type Task = {
-  id: string
-  title: string
-  cost: number
-  dueDate: Date
-  presentOrder: number
+import { ReturnTypeWithoutPromise } from '@/@types/return-type-without-promise'
+import { getUserTasks } from './actions'
 
-  userId: string
-}
+export type Task = ReturnTypeWithoutPromise<typeof getUserTasks>[0]

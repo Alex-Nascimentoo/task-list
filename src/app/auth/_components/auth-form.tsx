@@ -1,86 +1,64 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-
-const formSchema = z.object({
-  email: z.string().email({
-    message: "Please enter a valid email address.",
-  }),
-  password: z.string().min(8, {
-    message: "Password must be at least 8 characters long.",
-  }),
-})
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { useForm } from 'react-hook-form';
+import { signIn } from 'next-auth/react';
+import { useToast } from '@/hooks/use-toast';
 
 export function AuthForm() {
-  const [isLoading, setIsLoading] = useState(false)
+  const { register, handleSubmit, formState } = useForm<{ email: string }>();
+  const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  })
+  async function onSubmit(data: { email: string }) {
+    try {
+      signIn('nodemailer', { email: data.email, redirect: false });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    setIsLoading(true)
-    // Here you would typically send the login request to your backend
-    console.log(values)
-    setTimeout(() => {
-      setIsLoading(false)
-    }, 2000)
+      toast({
+        title: 'Link Mágico Enviado',
+        description: 'Verifique seu e-mail para o link mágico de login',
+      });
+    } catch (error) {
+      console.log(error);
+
+      toast({
+        title: 'Erro',
+        description: 'Ocorreu um erro. Por favor, tente novamente',
+      });
+    }
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
-          <CardDescription className="text-center">Enter your credentials to access your account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter your email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="Enter your password" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login"}
-              </Button>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
+    <div className="mx-auto max-w-sm space-y-8">
+      <div className="space-y-2 text-center">
+        <h1 className="text-3xl font-bold">Login</h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          Digite seu e-mail abaixo para fazer login em sua conta
+        </p>
+      </div>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="space-y-4"
+      >
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            placeholder="m@example.com"
+            required
+            type="email"
+            {...register('email')}
+          />
+        </div>
+        <Button
+          className="w-full"
+          type="submit"
+          disabled={formState.isSubmitting}
+        >
+          {formState.isSubmitting ? 'Enviando...' : 'Enviar Link Mágico'}
+        </Button>
+      </form>
     </div>
-  )
+  );
 }

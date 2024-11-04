@@ -34,16 +34,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { formatMoney } from '@/lib/utils'
-
-export type Task = {
-  id: string
-  title: string
-  cost: number
-  dueDate: Date
-  presentOrder: number
-
-  userId: string
-}
+import { Task } from '../types'
 
 const data: Task[] = [
   {

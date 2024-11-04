@@ -11,7 +11,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { Task } from './task-data-table'
+import { Task } from '../types'
 import { useRef } from 'react'
 import {
   Form,

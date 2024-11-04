@@ -31,38 +31,58 @@ import { CalendarIcon } from 'lucide-react'
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { toast } from '@/hooks/use-toast'
+import { upsertTaskSchema } from '../schema'
+import { upsertTask } from '../actions'
+import { useRouter } from 'next/navigation'
 
 type TaskUpsertSheetProps = {
   children?: React.ReactNode
   deafultValue?: Task
 }
 
-const FormSchema = z.object({
-  dueDate: z.date({
-    required_error: "Uma data de vencimento é obrigatória.",
-  }),
-  title: z.string({
-    required_error: "Um título é obrigatório.",
-  }),
-  cost: z.string({
-    required_error: "Um custo é obrigatório.",
-  }),
-})
-
 export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
   const ref = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
-  const form = useForm<z.infer<typeof FormSchema>>({
-    resolver: zodResolver(FormSchema),
+  const form = useForm<z.infer<typeof upsertTaskSchema>>({
+    resolver: zodResolver(upsertTaskSchema),
   })
 
-  const onSubmit = form.handleSubmit((data) => {
-    console.log(data)
+  const onSubmit = form.handleSubmit(async (data) => {
+    try {
+      // Transform cost to cents
+      const rawCost = data.cost.toString()
+      const clearCost = parseInt(rawCost.replace(/\D/g, ''))
+      const finalCost = rawCost.includes('.') ? clearCost : clearCost * 100
+  
+      const dto = {
+        ...data,
+        cost: finalCost,
+      }
+  
+      console.log(`dto is: ${typeof(dto.cost)}`)
+  
+      await upsertTask(dto)
+  
+      router.refresh()
+  
+      ref.current?.click()
+  
+      toast({
+        title: 'Tarefa criada',
+        description: 'A tarefa foi criada com sucesso.',
+      })
+    } catch (err) {
+      toast({
+        title: 'Erro ao criar tarefa',
+        description: 'Ocorreu um erro ao criar a tarefa, tente novamente.',
+      })
 
-    toast({
-      title: 'Tarefa criada',
-      description: 'A tarefa foi criada com sucesso.',
-    })
+      if (process.env.APP_ENV === 'dev') {
+        console.error(err)
+      }
+    }
+
   })
 
   return (
@@ -87,7 +107,11 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
               <FormItem>
                 <FormLabel>Título</FormLabel>
                 <FormControl>
-                <Input placeholder="Tarefa 03..." {...field} />
+                <Input
+                  placeholder="Tarefa 03..."
+                  {...field}
+                  autoComplete='off'
+                />
                 </FormControl>
                 <FormDescription>
                 O título é como você identificará a tarefa.
@@ -104,10 +128,15 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
               <FormItem>
                 <FormLabel>Custo</FormLabel>
                 <FormControl>
-                <Input placeholder="Custo financeiro da tarefa..." {...field} />
+                <Input
+                  type="number"
+                  placeholder="Custo financeiro da tarefa... (Ex: 100.00)"
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
                 </FormControl>
                 <FormDescription>
-                O quanto a tarefa custa financeiramente.
+                O quanto a tarefa custa financeiramente. (Ex: 100.00)
                 </FormDescription>
                 <FormMessage />
               </FormItem>

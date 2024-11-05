@@ -46,6 +46,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { TaskUpsertSheet } from './task-upsert-sheet'
+import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
 
 type TaskDataTableProps = {
   data: Task[]
@@ -122,11 +123,14 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
               <DropdownMenuItem
                 onClick={() => openEditSheet(task)}
               >
+                <Pencil1Icon className="w-4 h-4 mr-2" />
                 Editar tarefa
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => openDeleteDialog(task)}
+                className='text-red-500'
               >
+                <TrashIcon className="w-4 h-4 mr-2 text-red-500" />
                 Deletar tarefa
               </DropdownMenuItem>
             </DropdownMenuContent>

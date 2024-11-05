@@ -12,7 +12,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Task } from '../types'
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import {
   Form,
   FormField,
@@ -37,7 +37,7 @@ import { useRouter } from 'next/navigation'
 
 type TaskUpsertSheetProps = {
   children?: React.ReactNode
-  deafultValue?: Task
+  defaultValue?: Task
 }
 
 export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
@@ -48,7 +48,11 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
     resolver: zodResolver(upsertTaskSchema),
   })
 
+  const { reset } = useForm()
+
   const onSubmit = form.handleSubmit(async (data) => {
+    console.log('data is: ', data)
+
     try {
       // Transform cost to cents
       const rawCost = data.cost.toString()
@@ -58,6 +62,7 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
       const dto = {
         ...data,
         cost: finalCost,
+        id: props.defaultValue?.id,
       }
   
       console.log(`dto is: ${typeof(dto.cost)}`)
@@ -85,6 +90,11 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
 
   })
 
+  // Get the default values if exist
+  useEffect(() => {
+    reset(props.defaultValue)
+  }, [props.defaultValue, reset])
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -94,9 +104,9 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
           <Form {...form}>
             <form onSubmit={onSubmit} className="space-y-8 h-full flex flex-col">
             <SheetHeader>
-              <SheetTitle>Criar Tarefa</SheetTitle>
+              <SheetTitle>Editar Tarefa</SheetTitle>
               <SheetDescription>
-                Preencha os campos abaixo para criar uma nova tarefa. Clique em salvar quando terminar.
+                Preencha os campos abaixo para editar sua tarefa. Clique em salvar quando terminar.
               </SheetDescription>
             </SheetHeader>
 
@@ -111,6 +121,7 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
                   placeholder="Tarefa 03..."
                   {...field}
                   autoComplete='off'
+                  defaultValue={props.defaultValue?.title}
                 />
                 </FormControl>
                 <FormDescription>
@@ -124,13 +135,14 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
             <FormField
               control={form.control}
               name="cost"
-              render={({ field }) => (
+              render={({ field }) =>  (
               <FormItem>
                 <FormLabel>Custo</FormLabel>
                 <FormControl>
                 <Input
                   type="number"
                   placeholder="Custo financeiro da tarefa... (Ex: 100.00)"
+                  defaultValue={props.defaultValue?.cost}
                   {...field}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
@@ -146,6 +158,7 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
             <FormField
               control={form.control}
               name="dueDate"
+              defaultValue={props.defaultValue?.dueDate}
               render={({ field }) => (
                 <FormItem className="flex flex-col">
                   <FormLabel>Data limite</FormLabel>
@@ -173,9 +186,6 @@ export function TaskUpsertSheet(props: TaskUpsertSheetProps) {
                         mode="single"
                         selected={field.value}
                         onSelect={field.onChange}
-                        disabled={(date) =>
-                          date > new Date() || date < new Date("1900-01-01")
-                        }
                       />
                     </PopoverContent>
                   </Popover>

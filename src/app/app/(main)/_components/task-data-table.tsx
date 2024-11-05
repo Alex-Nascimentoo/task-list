@@ -92,17 +92,26 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
         const date: Date = row.getValue("dueDate")
         const result = date.toLocaleDateString("pt-BR")
   
-        return <div className="font-medium">{result}</div>
+        return <div className={`font-medium`}>{result}</div>
       },
     },
     {
       accessorKey: "cost",
       header: () => <div className="text-right">Custo</div>,
-      cell: ({ row }) => (
-        <div className="text-right font-medium">{
-          formatMoney(row.getValue("cost"), 'clear')
-        }</div>
-      ),
+      cell: ({ row }) => {
+        const cost: number = row.getValue("cost")
+
+        const bg = cost >= 100000 ? 'bg-slate-500 text-white' : ''
+
+        return (
+        <div className={`float-right`}>
+          <p
+            className={`max-w-fit font-medium text-right px-2 py-1 rounded-md ${bg}`}
+          >
+            { formatMoney(cost, 'clear') }
+          </p>
+        </div>
+      )},
     },
     {
       id: "actions",
@@ -165,7 +174,12 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
   }
 
   function openEditSheet(task: Task) {
-    setCurrentTask(task)
+    const data = {
+      ...task,
+      cost: task.cost / 100,
+    }
+
+    setCurrentTask(data)
     sheetRef.current?.click()
   }
 

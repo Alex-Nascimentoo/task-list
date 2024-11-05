@@ -3,7 +3,7 @@
 import { auth } from '@/services/auth'
 import { prisma } from '@/services/database'
 import { z } from 'zod'
-import { upsertTaskSchema } from './schema'
+import { deleteTaskSchema, upsertTaskSchema } from './schema'
 
 export async function getUserTasks() {
   const session = await auth()
@@ -68,4 +68,29 @@ export async function upsertTask(dto: z.infer<typeof upsertTaskSchema>) {
   })
 
   return task
+}
+
+export async function deleteTask(dto: z.infer<typeof deleteTaskSchema>) {
+  const session = await auth()
+
+  if (!session?.user?.id) {
+    return {
+      error: 'User not authorized',
+      data: null,
+    }
+  }
+
+  if (dto.id) {
+    await prisma.task.delete({
+      where: {
+        id: dto.id,
+        userId: session?.user?.id,
+      },
+    })
+
+    return {
+      error: null,
+      data: 'Task deleted successfully',
+    }
+  }
 }

@@ -6,3 +6,7 @@ export const upsertTaskSchema = z.object({
   cost: z.number(),
   dueDate: z.date(),
 })
+
+export const deleteTaskSchema = z.object({
+  id: z.string(),
+})

@@ -172,8 +172,8 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
                 onChangeValue={(e: ChangeEvent<HTMLInputElement>, originalValue) =>
                   setCost(originalValue.toString())
                 }
-                max={9999999999999}
                 {...form.register('cost')}
+                max={9999999999999}
                 InputElement={
                   <Input
                     placeholder='R$ 123,00'

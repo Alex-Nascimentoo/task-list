@@ -300,9 +300,42 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
 
                       <p className='col-span-2'>{ data[parseInt(row.id)].dueDate.toLocaleDateString() }</p>
 
-                      <p className='col-span-2 text-right'>{ data[parseInt(row.id)].cost }</p>
+                      <p
+                        className={`
+                          col-span-2 text-right rounded-md px-2 py-1
+                          ${parseFloat(data[parseInt(row.id)].cost) >= 1000 ? 'text-black bg-slate-200' : ''}  
+                        `}
+                      >{ formatMoney(parseFloat(data[parseInt(row.id)].cost)) }</p>
 
-                      <p className='col-span-2 justify-self-center'>action</p>
+                      <div className="flex justify-center col-span-2">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                              <span className="sr-only">Abrir  menu</span>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setCurrentTask({ ...data[parseInt(row.id)] })
+                                sheetRef.current?.click()
+                              }}
+                            >
+                              <Pencil1Icon className="w-4 h-4 mr-2" />
+                              Editar tarefa
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => openDeleteDialog(data[parseInt(row.id)])}
+                              className='text-red-500'
+                            >
+                              <TrashIcon className="w-4 h-4 mr-2 text-red-500" />
+                              Deletar tarefa
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
                     </div>
                   </div>
                 ))) : (

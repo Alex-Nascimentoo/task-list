@@ -168,7 +168,7 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
             <FormItem className=''>
               <FormLabel>Custo</FormLabel>
               <CurrencyInput
-                defaultValue={props.defaultValue ? parseFloat(props.defaultValue.cost).toString() : ''}
+                defaultValue={props.defaultValue ? parseFloat(props.defaultValue.cost) : ''}
                 onChangeValue={(e: ChangeEvent<HTMLInputElement>, originalValue) =>
                   setCost(originalValue.toString())
                 }

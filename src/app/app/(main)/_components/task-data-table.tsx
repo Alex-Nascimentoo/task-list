@@ -6,14 +6,13 @@ import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-  flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, GripHorizontalIcon, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -24,14 +23,6 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import { formatMoney } from '@/lib/utils'
 import { Task } from '../types'
 import { deleteTask } from '../actions'
@@ -45,8 +36,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { TaskUpsertSheet } from './task-upsert-sheet'
 import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
+import TaskUpsertForm from './task-upsert-form'
+import { createSwapy } from 'swapy'
 
 type TaskDataTableProps = {
   data: Task[]
@@ -69,6 +61,13 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
   const [rowSelection, setRowSelection] = React.useState({})
 
   const columns: ColumnDef<Task>[] = [
+    {
+      // accessorKey: "id",
+      id: 'id',
+      accessorKey: "id",
+      header: () => <div className="w-fit">ID</div>,
+      cell: ({ row }) => <div className="w-fit">{row.getValue("id")}</div>,
+    },
     {
       accessorKey: "title",
       header: ({ column }) => {
@@ -101,13 +100,15 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
       cell: ({ row }) => {
         const cost: number = row.getValue("cost")
 
-        const bg = cost >= 100000 ? 'bg-slate-500 text-white' : ''
+        const bg = cost >= 1000 ? 'bg-slate-500 text-white' : ''
 
         return (
         <div className={`float-right`}>
           <p
             className={`max-w-fit font-medium text-right px-2 py-1 rounded-md ${bg}`}
           >
+            {/* { cost } */}
+            {/* { cost.toLocaleString('pt-BR') } */}
             { formatMoney(cost, 'clear') }
           </p>
         </div>
@@ -130,7 +131,11 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuItem
-                onClick={() => openEditSheet(task)}
+                onClick={() => {
+                  console.log('open edit with: ', task)
+                  setCurrentTask({ ...task, cost: task.cost })
+                  sheetRef.current?.click()
+                }}
               >
                 <Pencil1Icon className="w-4 h-4 mr-2" />
                 Editar tarefa
@@ -173,16 +178,6 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
     setIsDialogOpen(true)
   }
 
-  function openEditSheet(task: Task) {
-    const data = {
-      ...task,
-      cost: task.cost / 100,
-    }
-
-    setCurrentTask(data)
-    sheetRef.current?.click()
-  }
-
   async function handleDeleteTask(task: Task) {
     await deleteTask({ id: task.id })
 
@@ -195,9 +190,15 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
     })
   }
 
+  React.useEffect(() => {
+    const container = document.querySelector('#dragable')
+    const swapy = createSwapy(container)
+    swapy.enable(true)
+  }, [])
+
   return (
     <>
-      <TaskUpsertSheet defaultValue={currentTask!}>
+      <TaskUpsertForm defaultValue={currentTask || undefined}>
         <Button
           size='sm'
           className='text-base font-semibold hidden'
@@ -205,7 +206,7 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
         >
           Editar tarefa
         </Button>
-      </TaskUpsertSheet>
+      </TaskUpsertForm>
 
       <Dialog open={isDialogOpen}>
         <DialogContent>
@@ -249,55 +250,89 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
           />
 
         </div>
+            <div
+              className='
+              grid grid-cols-table gap-4
+              ring-1 ring-gray-200 rounded-md
+              mb-4 px-4 py-2
+              text-gray-500
+              '
+            >
+              <div></div>
+
+              <p className='col-span-4'>ID</p>
+
+              <p className='col-span-9'>Título</p>
+
+              <p className='col-span-2'>Data limite</p>
+
+              <p className='text-right col-span-2'>Custo</p>
+
+              <p className='justify-self-center col-span-2'>Ações</p>
+            </div>
         <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead key={header.id}>
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    )
-                  })}
-                </TableRow>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={columns.length}
-                    className="h-24 text-center"
-                  >
-                    Sem resultados.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
+          
+          <section>
+          <div
+            id='dragable'
+            className='flex flex-col gap-4'
+          >
+            {
+              table.getRowModel().rows?.length ? (
+                table.getRowModel().rows.map((row, index) => (
+                  <div key={index} data-swapy-slot={index} className='min-h-4'>
+                    <div
+                      data-swapy-item={row.id}
+                      className='grid grid-cols-table gap-4 ring-1 ring-gray-200 rounded-md p-4 items-center'
+                    >
+                      <div
+                        data-swapy-handle
+                        className='flex justify-center'
+                      >
+                        <GripHorizontalIcon className='w-4 h-4' />
+                      </div>
+
+                      <p className='col-span-4'>{ data[parseInt(row.id)].id }</p>
+
+                      <p
+                        className='col-span-9 text-ellipsis overflow-hidden whitespace-nowrap'
+                      >{ data[parseInt(row.id)].title }</p>
+
+                      <p className='col-span-2'>{ data[parseInt(row.id)].dueDate.toLocaleDateString() }</p>
+
+                      <p className='col-span-2 text-right'>{ data[parseInt(row.id)].cost }</p>
+
+                      <p className='col-span-2 justify-self-center'>action</p>
+                    </div>
+                  </div>
+                ))) : (
+                  <div className='flex justify-center items-center h-24'>
+                    <p>Sem resultados.</p>
+                  </div>
+                )
+              }
+            </div>
+          </section>
+        </div>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <div className="space-x-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
+              Anterior
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.nextPage()}
+              disabled={!table.getCanNextPage()}
+            >
+              Próximo
+            </Button>
+          </div>
         </div>
       </div>
     </>

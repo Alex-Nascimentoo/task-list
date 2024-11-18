@@ -7,9 +7,9 @@ import {
 } from '@/components/dashboard/page'
 import { TaskDataTable } from './_components/task-data-table'
 import { Button } from '@/components/ui/button'
-import { TaskUpsertSheet } from './_components/task-upsert-sheet'
 import { PlusIcon } from '@radix-ui/react-icons'
 import { getUserTasks } from './actions'
+import TaskUpsertForm from './_components/task-upsert-form'
 
 export default async function Page() {
   const tasks = await getUserTasks()
@@ -20,7 +20,7 @@ export default async function Page() {
         <DashboardPageHeaderTitle>Tarefas</DashboardPageHeaderTitle>
 
         <DashboardPageHeaderNav>
-          <TaskUpsertSheet>
+          <TaskUpsertForm>
             <Button
               size='sm'
               className='text-base font-semibold'
@@ -28,7 +28,7 @@ export default async function Page() {
               <PlusIcon className='w-5 h-5 mr-2' />
               Adicionar tarefa
             </Button>
-          </TaskUpsertSheet>
+          </TaskUpsertForm>
         </DashboardPageHeaderNav>
       </DashboardPageHeader>
 
@@ -39,7 +39,7 @@ export default async function Page() {
             mb-6
           "
         >
-          Seja bem-vindo!
+          Lista de tarefas
         </h1>
 
         <TaskDataTable data={tasks} />

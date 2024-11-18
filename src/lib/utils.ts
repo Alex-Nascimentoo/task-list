@@ -12,7 +12,8 @@ export function cn(...inputs: ClassValue[]) {
  * @returns The formatted currency as string.
  */
 export function formatMoney(value: number, type?: 'clear' | null) {
-  const realValue = value / 100
+  // const realValue = value / 100
+  const realValue = value
   
   const result = new Intl.NumberFormat('pt-BR', {
     style: 'currency',

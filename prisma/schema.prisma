@@ -28,8 +28,6 @@ model User {
   createdAt DateTime @default(now()) @map(name: "created_at")
   updatedAt DateTime @updatedAt @map(name: "updated_at")
 
-  tasks Task[]
-
   @@map("users")
 }
  
@@ -95,10 +93,7 @@ model Authenticator {
 model Task {
   id String @id @default(cuid())
   title String @unique
-  cost Int
+  cost String
   dueDate DateTime @map(name: "due_date")
   presentOrder Int @default(autoincrement()) @unique @map(name: "present_order")
-
-  user User @relation(fields: [userId], references: [id])
-  userId String @map(name: "user_id")
 }

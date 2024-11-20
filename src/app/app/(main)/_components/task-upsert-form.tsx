@@ -34,6 +34,7 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
   const router = useRouter()
 
   const ref = useRef<HTMLDivElement>(null)
+  const titleRef = useRef<HTMLInputElement>(null)
 
   const [dueDate, setDueDate] = useState(props.defaultValue?.dueDate || undefined)
   const [cost, setCost] = useState(props.defaultValue?.cost.toString() || '')
@@ -120,6 +121,10 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.defaultValue])
 
+  useEffect(() => {
+    titleRef.current?.select()
+  })
+
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -155,6 +160,7 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
               <Input
                 placeholder="title"
                 {...form.register('title')}
+                ref={titleRef}
                 defaultValue={props.defaultValue?.title}
                 autoFocus
                 required

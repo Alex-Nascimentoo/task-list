@@ -49,17 +49,23 @@ export default function TaskCard(props: TaskCardProps) {
               <MoreHorizontal className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+          <DropdownMenuContent className='
+          bg-white relative z-10
+          ring-1 ring-gray-200 rounded-md shadow-lg
+          p-2
+          ' align="end">
+            <DropdownMenuLabel className='font-semibold'>Ações</DropdownMenuLabel>
+            
             <DropdownMenuItem
               onClick={() => props.handleEdit(props.data)}
+              className='flex items-center gap-2 my-2 hover:cursor-pointer hover:outline-none hover:bg-gray-200 p-2 rounded-lg'
             >
               <Pencil1Icon className="w-4 h-4 mr-2" />
               Editar tarefa
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => props.handleDelete(props.data)}
-              className='text-red-500'
+              className='text-red-500 flex items-center gap-2 hover:cursor-pointer hover:outline-none hover:bg-gray-200 p-2 rounded-lg'
             >
               <TrashIcon className="w-4 h-4 mr-2 text-red-500" />
               Deletar tarefa

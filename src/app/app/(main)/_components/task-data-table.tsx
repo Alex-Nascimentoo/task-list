@@ -210,9 +210,16 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
 
       <Dialog open={isDialogOpen}>
         <DialogContent>
-          <DialogHeader>
+          <DialogHeader
+            className='overflow-hidden'
+          >
             <DialogTitle className='text-2xl'>Tem certeza?</DialogTitle>
-            <DialogDescription className='text-base'>
+            <DialogDescription
+              className='
+              text-base
+              overflow-hidden whitespace-pre-wrap text-ellipsis max-w-full
+              '
+            >
               Esta ação não pode ser desfeita. Isso excluirá permanentemente sua tarefa:
               <br />
               <strong>{ currentTask?.title }</strong>

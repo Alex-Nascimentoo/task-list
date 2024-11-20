@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, GripHorizontalIcon, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -39,6 +39,7 @@ import {
 import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
 import TaskUpsertForm from './task-upsert-form'
 import { createSwapy } from 'swapy'
+import TaskCard from './task-card'
 
 type TaskDataTableProps = {
   data: Task[]
@@ -48,6 +49,8 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
   const router = useRouter()
   const sheetRef = React.useRef<HTMLButtonElement>(null)
   
+  const [slotItems, setSlotItems] = React.useState(localStorage.getItem('slotItem') ? JSON.parse(localStorage.getItem('slotItem')!) : {})
+
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [currentTask, setCurrentTask] = React.useState<Task | null>(null)
 
@@ -173,6 +176,11 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
     },
   })
 
+  function openEditDialog(task: Task) {
+    setCurrentTask(task)
+    sheetRef.current?.click()
+  }
+
   async function openDeleteDialog(task: Task) {
     setCurrentTask(task)
     setIsDialogOpen(true)
@@ -193,8 +201,40 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
   React.useEffect(() => {
     const container = document.querySelector('#dragable')
     const swapy = createSwapy(container)
-    swapy.enable(true)
-  }, [])
+    let localItems = {}
+
+    if (!localStorage.getItem('slotItem')) {
+      console.log('storage is empty')
+
+      data.map((item, index) => {
+        localItems = {
+          ...localItems,
+          [`${index}`]: item.id,
+        }
+      })
+
+      localStorage.setItem('slotItem', JSON.stringify(localItems))
+      setSlotItems(localItems)
+    }
+    
+    swapy.onSwap(({ data }) => {
+      console.log('swap', data);
+      localStorage.setItem('slotItem', JSON.stringify(data.object))
+    })
+
+    swapy.onSwapEnd(({ data, hasChanged }) => {
+      console.log(hasChanged);
+      console.log('end', data);
+    })
+
+    swapy.onSwapStart(() => {
+      console.log('start')
+    })
+
+    return () => {
+      swapy.destroy()
+    }
+  }, [data, slotItems])
 
   return (
     <>
@@ -288,62 +328,18 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
               table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row, index) => (
                   <div key={index} data-swapy-slot={index} className='min-h-4'>
-                    <div
-                      data-swapy-item={row.id}
-                      className='grid grid-cols-table gap-4 ring-1 ring-gray-200 rounded-md p-4 items-center'
-                    >
-                      <div
-                        data-swapy-handle
-                        className='flex justify-center'
-                      >
-                        <GripHorizontalIcon className='w-4 h-4' />
-                      </div>
 
-                      <p className='col-span-4'>{ data[parseInt(row.id)].id }</p>
+                    {
+                      data.filter((item) => item.id === slotItems[index]).map((item) => (
+                        <TaskCard
+                          key={item.id}
+                          data={item}
+                          handleDelete={openDeleteDialog}
+                          handleEdit={openEditDialog}
+                        />
+                      ))
+                    }
 
-                      <p
-                        className='col-span-9 text-ellipsis overflow-hidden whitespace-nowrap'
-                      >{ data[parseInt(row.id)].title }</p>
-
-                      <p className='col-span-2'>{ data[parseInt(row.id)].dueDate.toLocaleDateString() }</p>
-
-                      <p
-                        className={`
-                          col-span-2 text-right rounded-md px-2 py-1
-                          ${parseFloat(data[parseInt(row.id)].cost) >= 1000 ? 'text-black bg-slate-200' : ''}  
-                        `}
-                      >{ formatMoney(parseFloat(data[parseInt(row.id)].cost)) }</p>
-
-                      <div className="flex justify-center col-span-2">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <span className="sr-only">Abrir  menu</span>
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                            <DropdownMenuItem
-                              onClick={() => {
-                                setCurrentTask({ ...data[parseInt(row.id)] })
-                                sheetRef.current?.click()
-                              }}
-                            >
-                              <Pencil1Icon className="w-4 h-4 mr-2" />
-                              Editar tarefa
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              onClick={() => openDeleteDialog(data[parseInt(row.id)])}
-                              className='text-red-500'
-                            >
-                              <TrashIcon className="w-4 h-4 mr-2 text-red-500" />
-                              Deletar tarefa
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </div>
-                    </div>
                   </div>
                 ))) : (
                   <div className='flex justify-center items-center h-24'>

@@ -331,12 +331,16 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
                     key={item.id}
                     data-swapy-slot={index}
                   >
-                    <TaskCard
-                      key={item.id}
-                      data={item}
-                      handleDelete={openDeleteDialog}
-                      handleEdit={openEditDialog}
-                    />
+                    {
+                      data.filter(item => item.id === slotItems[index]).map(task => (
+                        <TaskCard
+                          key={task.id}
+                          data={task}
+                          handleDelete={openDeleteDialog}
+                          handleEdit={openEditDialog}
+                        />
+                      ))
+                    }
                   </div>
                 ))
               ) : (

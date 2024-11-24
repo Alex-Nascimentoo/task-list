@@ -131,9 +131,6 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
           ref={ref}
           onClick={() => {
             form.reset()
-            setCost('')
-            setDueDate(undefined)
-            setTitle('')
           }}
         >
           {props.children}

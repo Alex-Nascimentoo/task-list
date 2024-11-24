@@ -135,7 +135,6 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuItem
                 onClick={() => {
-                  console.log('open edit with: ', task)
                   setCurrentTask({ ...task, cost: task.cost })
                   sheetRef.current?.click()
                 }}
@@ -204,8 +203,6 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
     let localItems = {}
 
     if (!localStorage.getItem('slotItem')) {
-      console.log('storage is empty')
-
       data.map((item, index) => {
         localItems = {
           ...localItems,

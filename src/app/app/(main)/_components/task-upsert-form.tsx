@@ -84,12 +84,8 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
         id: props.defaultValue?.id || '',
       }
 
-      console.log('dto is: ', dto)
-
-      console.log('will try to upsert now')
       await upsertTask(dto)
 
-      console.log('finished upsert')
       form.reset()
       setCost('')
       setDueDate(undefined)

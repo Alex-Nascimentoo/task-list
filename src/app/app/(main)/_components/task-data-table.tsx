@@ -1,29 +1,9 @@
 "use client"
 
 import * as React from "react"
-import {
-  ColumnDef,
-  ColumnFiltersState,
-  SortingState,
-  VisibilityState,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useReactTable,
-} from "@tanstack/react-table"
-import { ArrowUpDown, MoreHorizontal } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
-import { formatMoney } from '@/lib/utils'
 import { Task } from '../types'
 import { deleteTask } from '../actions'
 import { useRouter } from 'next/navigation'
@@ -36,7 +16,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Pencil1Icon, TrashIcon } from '@radix-ui/react-icons'
 import TaskUpsertForm from './task-upsert-form'
 import { createSwapy } from 'swapy'
 import TaskCard from './task-card'
@@ -53,128 +32,8 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [currentTask, setCurrentTask] = React.useState<Task | null>(null)
-
-  const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
+ 
   const [filterTitle, setFilterTitle] = React.useState("")
-
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [rowSelection, setRowSelection] = React.useState({})
-
-  const columns: ColumnDef<Task>[] = [
-    {
-      // accessorKey: "id",
-      id: 'id',
-      accessorKey: "id",
-      header: () => <div className="w-fit">ID</div>,
-      cell: ({ row }) => <div className="w-fit">{row.getValue("id")}</div>,
-    },
-    {
-      accessorKey: "title",
-      header: ({ column }) => {
-        return (
-          <Button
-            variant="ghost"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className='pl-0'
-          >
-            Título
-            <ArrowUpDown className="ml-2 h-4 w-4" />
-          </Button>
-        )
-      },
-      cell: ({ row }) => <div className="">{row.getValue("title")}</div>,
-    },
-    {
-      accessorKey: "dueDate",
-      header: () => <div className="">Data limite</div>,
-      cell: ({ row }) => {
-        const date: Date = row.getValue("dueDate")
-        const result = date.toLocaleDateString("pt-BR")
-  
-        return <div className={`font-medium`}>{result}</div>
-      },
-    },
-    {
-      accessorKey: "cost",
-      header: () => <div className="text-right">Custo</div>,
-      cell: ({ row }) => {
-        const cost: number = row.getValue("cost")
-
-        const bg = cost >= 1000 ? 'bg-slate-500 text-white' : ''
-
-        return (
-        <div className={`float-right`}>
-          <p
-            className={`max-w-fit font-medium text-right px-2 py-1 rounded-md ${bg}`}
-          >
-            {/* { cost } */}
-            {/* { cost.toLocaleString('pt-BR') } */}
-            { formatMoney(cost, 'clear') }
-          </p>
-        </div>
-      )},
-    },
-    {
-      id: "actions",
-      enableHiding: false,
-      cell: ({ row }) => {
-        const task = row.original
-  
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Abrir  menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem
-                onClick={() => {
-                  setCurrentTask({ ...task, cost: task.cost })
-                  sheetRef.current?.click()
-                }}
-              >
-                <Pencil1Icon className="w-4 h-4 mr-2" />
-                Editar tarefa
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => openDeleteDialog(task)}
-                className='text-red-500'
-              >
-                <TrashIcon className="w-4 h-4 mr-2 text-red-500" />
-                Deletar tarefa
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      },
-    },
-  ]
-
-  const table = useReactTable({
-    data,
-    columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-    },
-  })
 
   function openEditDialog(task: Task) {
     setCurrentTask(task)
@@ -351,26 +210,6 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
               }
             </div>
           </section>
-        </div>
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <div className="space-x-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              Anterior
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              Próximo
-            </Button>
-          </div>
         </div>
       </div>
     </>

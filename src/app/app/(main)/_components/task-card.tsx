@@ -31,7 +31,7 @@ export default function TaskCard(props: TaskCardProps) {
         className='col-span-9 text-ellipsis overflow-hidden whitespace-nowrap'
       >{ props.data.title }</p>
 
-      <p className='col-span-2'>{ props.data.dueDate.toLocaleDateString() }</p>
+      <p className='col-span-2'>{ props.data.dueDate.toLocaleDateString('pt-BR') }</p>
 
       <p
         className={`

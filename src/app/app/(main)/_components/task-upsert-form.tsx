@@ -38,11 +38,12 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
 
   const [dueDate, setDueDate] = useState(props.defaultValue?.dueDate || undefined)
   const [cost, setCost] = useState(props.defaultValue?.cost.toString() || '')
+  const [title, setTitle] = useState(props.defaultValue?.title || '')
 
   const form = useForm<Task>()
 
   async function onSubmit(data: Task) {
-    if (!data.title) {
+    if (!title) {
       toast({
         title: 'Erro',
         description: 'O título é obrigatório.',
@@ -117,13 +118,15 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
     form.reset(props.defaultValue)
     setCost(props.defaultValue?.cost.toString() || '')
     setDueDate(props.defaultValue?.dueDate)
+    setTitle(props.defaultValue?.title || '')
+
+    // Focus on title input after form is reset
+    setTimeout(() => {
+      titleRef.current?.select()
+    })
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.defaultValue])
-
-  useEffect(() => {
-    titleRef.current?.select()
-  })
 
   return (
     <Sheet>
@@ -134,6 +137,7 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
             form.reset()
             setCost('')
             setDueDate(undefined)
+            setTitle('')
           }}
         >
           {props.children}
@@ -161,7 +165,9 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
                 placeholder="title"
                 {...form.register('title')}
                 ref={titleRef}
-                defaultValue={props.defaultValue?.title}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                // defaultValue={props.defaultValue?.title}
                 autoFocus
                 required
               />

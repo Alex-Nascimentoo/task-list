@@ -48,8 +48,8 @@ type TaskDataTableProps = {
 export function TaskDataTable({ data }: TaskDataTableProps) {
   const router = useRouter()
   const sheetRef = React.useRef<HTMLButtonElement>(null)
-  
-  const [slotItems, setSlotItems] = React.useState(localStorage.getItem('slotItem') ? JSON.parse(localStorage.getItem('slotItem')!) : {})
+
+  const [slotItems, setSlotItems] = React.useState({})
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [currentTask, setCurrentTask] = React.useState<Task | null>(null)
@@ -235,6 +235,10 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
       swapy.destroy()
     }
   }, [data, slotItems])
+
+  React.useEffect(() => {
+    setSlotItems(JSON.parse(localStorage.getItem('slotItem')!))
+  }, [])
 
   return (
     <>

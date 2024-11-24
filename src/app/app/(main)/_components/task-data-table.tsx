@@ -181,7 +181,10 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
           <section>
           <div
             id='dragable'
-            className='flex flex-col gap-4'
+            className='
+            flex flex-col gap-4
+            max-h-[32rem] overflow-y-scroll
+            '
           >
             {
               data.length ? ( data.filter((item) => item.title.toLowerCase().includes(filterTitle.toLowerCase()))

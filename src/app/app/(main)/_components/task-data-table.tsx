@@ -58,6 +58,7 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
   )
+  const [filterTitle, setFilterTitle] = React.useState("")
 
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -290,10 +291,8 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
         <div className="flex items-center py-4">
           <Input
             placeholder="Filtrar títulos..."
-            value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
-            onChange={(event) =>
-              table.getColumn("title")?.setFilterValue(event.target.value)
-            }
+            value={filterTitle}
+            onChange={(event) => setFilterTitle(event.target.value)}
             className="max-w-sm"
           />
 
@@ -326,23 +325,21 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
             className='flex flex-col gap-4'
           >
             {
-              table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row, index) => (
-                  <div key={index} data-swapy-slot={index} className='min-h-4'>
-
-                    {
-                      data.filter((item) => item.id === slotItems[index]).map((item) => (
-                        <TaskCard
-                          key={item.id}
-                          data={item}
-                          handleDelete={openDeleteDialog}
-                          handleEdit={openEditDialog}
-                        />
-                      ))
-                    }
-
+              data.length ? ( data.filter((item) => item.title.toLowerCase().includes(filterTitle.toLowerCase()))
+                .map((item, index) => (
+                  <div
+                    key={item.id}
+                    data-swapy-slot={index}
+                  >
+                    <TaskCard
+                      key={item.id}
+                      data={item}
+                      handleDelete={openDeleteDialog}
+                      handleEdit={openEditDialog}
+                    />
                   </div>
-                ))) : (
+                ))
+              ) : (
                   <div className='flex justify-center items-center h-24'>
                     <p>Sem resultados.</p>
                   </div>

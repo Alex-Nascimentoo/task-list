@@ -79,6 +79,7 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
     try {
       const dto = {
         ...data,
+        title: title,
         cost: parseFloat(cost).toString(),
         dueDate: dueDate,
         id: props.defaultValue?.id || '',
@@ -89,6 +90,7 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
       form.reset()
       setCost('')
       setDueDate(undefined)
+      setTitle('')
 
       router.refresh()
 

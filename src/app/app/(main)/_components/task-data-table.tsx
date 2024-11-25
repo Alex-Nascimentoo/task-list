@@ -191,10 +191,10 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
                 .map((item, index) => (
                   <div
                     key={item.id}
-                    data-swapy-slot={index}
+                    data-swapy-slot={data.findIndex(i => i.id === item.id)}
                   >
                     {
-                      data.filter(item => item.id === slotItems[index]).map(task => (
+                      data.filter(i => i.id === item.id).map(task => (
                         <TaskCard
                           key={task.id}
                           data={task}

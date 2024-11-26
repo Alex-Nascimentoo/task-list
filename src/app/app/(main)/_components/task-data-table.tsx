@@ -23,11 +23,15 @@ type TaskDataTableProps = {
   data: Task[]
 }
 
+type SlotItems = {
+  [key: string]: string
+}
+
 export function TaskDataTable({ data }: TaskDataTableProps) {
   const router = useRouter()
   const sheetRef = React.useRef<HTMLButtonElement>(null)
 
-  const [slotItems, setSlotItems] = React.useState({})
+  const [slotItems, setSlotItems] = React.useState<SlotItems>({})
 
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [currentTask, setCurrentTask] = React.useState<Task | null>(null)

@@ -3,7 +3,6 @@
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Task } from '../types'
 import { deleteTask } from '../actions'
 import { useRouter } from 'next/navigation'
@@ -33,7 +32,7 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [currentTask, setCurrentTask] = React.useState<Task | null>(null)
  
-  const [filterTitle, setFilterTitle] = React.useState("")
+  const [filterTitle] = React.useState("")
 
   function openEditDialog(task: Task) {
     setCurrentTask(task)

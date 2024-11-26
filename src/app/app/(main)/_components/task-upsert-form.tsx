@@ -92,7 +92,7 @@ export default function TaskUpsertForm(props: TaskUpsertFormProps) {
       setDueDate(undefined)
       setTitle('')
 
-      router.refresh()
+      router.push('/app')
 
       ref.current?.click()
     

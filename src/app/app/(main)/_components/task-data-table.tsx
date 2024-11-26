@@ -73,6 +73,16 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
       localStorage.setItem('slotItem', JSON.stringify(localItems))
       setSlotItems(localItems)
     }
+
+    if (slotItems[data.length - 1] === undefined) {
+      const prev = JSON.parse(localStorage.getItem('slotItem')!)
+      const newItems = {
+        ...prev,
+        [`${data.length - 1}`]: data[data.length - 1].id,
+      }
+      localStorage.setItem('slotItem', JSON.stringify(newItems))
+      setSlotItems(newItems)
+    }
     
     swapy.onSwap(({ data }) => {
       console.log('swap', data);
@@ -147,7 +157,7 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
       </Dialog>
 
       <div className="w-full">
-        <div className="flex items-center py-4">
+        {/* <div className="flex items-center py-4">
           <Input
             placeholder="Filtrar títulos..."
             value={filterTitle}
@@ -155,7 +165,7 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
             className="max-w-sm"
           />
 
-        </div>
+        </div> */}
             <div
               className='
               grid grid-cols-table gap-4
@@ -188,13 +198,13 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
           >
             {
               data.length ? ( data.filter((item) => item.title.toLowerCase().includes(filterTitle.toLowerCase()))
-                .map((item) => (
+                .map((item, index) => (
                   <div
                     key={item.id}
-                    data-swapy-slot={data.findIndex(i => i.id === item.id)}
+                    data-swapy-slot={index}
                   >
                     {
-                      data.filter(i => i.id === item.id).map(task => (
+                      data.filter(i => i.id === slotItems[index]).map(task => (
                         <TaskCard
                           key={task.id}
                           data={task}

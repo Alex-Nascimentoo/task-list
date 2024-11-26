@@ -188,7 +188,7 @@ export function TaskDataTable({ data }: TaskDataTableProps) {
           >
             {
               data.length ? ( data.filter((item) => item.title.toLowerCase().includes(filterTitle.toLowerCase()))
-                .map((item, index) => (
+                .map((item) => (
                   <div
                     key={item.id}
                     data-swapy-slot={data.findIndex(i => i.id === item.id)}
